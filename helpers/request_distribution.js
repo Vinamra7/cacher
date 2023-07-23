@@ -1,7 +1,8 @@
 const HashRing = require('node-hashring');
-const {serverDetails} = require("../controller/server_details")
-const hashRing = new HashRing(serverDetails);
-const getHashNode = (uniqueKey) => {
+const {getServerDetails} = require("../controller/server_details")
+const getHashNode = async (uniqueKey) => {
+    const serverDetails = await getServerDetails();
+    const hashRing = new HashRing(serverDetails);
     return hashRing.findNode(uniqueKey);
 };
 

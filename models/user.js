@@ -11,31 +11,12 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  vmsAllotted: [
-    {
-      vmName: {
-        type: String,
-        required: true,
-      },
-      vmMemory: {
-        type: Number,
-        required: true,
-      },
-      vmIPAddress: {
-        type: String,
-        required: true,
-      },
-      subscriptionName: {
-        type: String,
-        required: true,
-      },
-      resourceGroupName: {
-        type: String,
-        required: true,
-      },
-      // Add more fields related to VM properties if needed
-    },
-  ],
+  memoryUsed: {
+    type: Number,
+    required: true,
+    default:0
+  },
+  
   password: {
     type: String,
     required: true,

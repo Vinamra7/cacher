@@ -3,7 +3,7 @@ const Redis = require('ioredis');
 const addKeyController = async (req,res) =>{
     const {uniqueId,cacheKey,value } = req.body;
     const uniqueKey = uniqueId + cacheKey;
-    let serverIpAddress = getHashNode(uniqueKey);
+    let serverIpAddress = await getHashNode(uniqueKey);
     const connectionDetails =  redisConnectionDetails(serverIpAddress);
     const redis = await new Redis(connectionDetails);
     await redis.set(uniqueKey,value );
@@ -13,7 +13,7 @@ const addKeyController = async (req,res) =>{
 const getKeyController = async (req,res) =>{
     const {uniqueId,cacheKey } = req.body;
     const uniqueKey = uniqueId + cacheKey;
-    let serverIpAddress = getHashNode(uniqueKey);
+    let serverIpAddress = await getHashNode(uniqueKey);
     const connectionDetails =  redisConnectionDetails(serverIpAddress);
     const redis = await new Redis(connectionDetails);
     const keyValue = await redis.get(uniqueKey);
