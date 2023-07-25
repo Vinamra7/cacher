@@ -78,7 +78,7 @@ const increaseAllocationController = async (req, res) => {
     if (!user) {
       return res.status(404).send({ error: "User not found." });
     }
-    
+
     // Update the user's memoryAllocated value based on the provided capacity
     // You may want to add validation checks for the capacity if necessary
     user.memoryAllocated = capacity;
@@ -89,7 +89,7 @@ const increaseAllocationController = async (req, res) => {
       .send({ message: "Memory allocation updated successfully.", user });
   } catch (error) {
     console.error("Error updating memory allocation:", error);
-    res.status(500).send({error: "Error updating memory allocation. Please try again later."});
+    res.status(500).send({ error: "Error updating memory allocation. Please try again later." });
   }
 };
 
