@@ -7,7 +7,7 @@ const getHashNode = async (uniqueKey) => {
 };
 
 const redisConnectionDetails = (serverIpAddress)=>{
-    return {host:serverIpAddress,port:6379,password:"abcd"}
+    return {host:serverIpAddress,port:8000,password:"abcd"}
 
 }
 module.exports = {getHashNode,redisConnectionDetails};
