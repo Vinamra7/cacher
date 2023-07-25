@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
-
+require('dotenv').config();
 // Replace <your-mongodb-uri> with your actual MongoDB connection string
-const mongoDBURI = "mongodb+srv://cacher:ibsbOet3AmGLZu9E@cluster0.davdsnz.mongodb.net/?retryWrites=true&w=majority";
-
+const mongoDBURI = process.env.uri;
 // Set up the connection to MongoDB
 mongoose
   .connect(mongoDBURI, {

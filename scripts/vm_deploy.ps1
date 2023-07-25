@@ -1,13 +1,47 @@
 param(
-  [string]$countOfServers
+    [string]$countOfServers
 )
-az login --service-principal --username "eacfad3e-a728-4059-aa2d-2b4f7319776e" --password "2Rh8Q~f57ujrRdNsLuDBdkn~zguPQHFEsvNPXc26" --tenant "12b4fbf9-dea8-4490-bede-9cc40309ad61"
 
-az vm create --resource-group "test-project_group" `
-  --name "test-project2" `
-  --image "/subscriptions/9ec5dfe7-ab9e-4f9b-ade0-ffb59f14777a/resourceGroups/test-project_group/providers/Microsoft.Compute/galleries/CacherNew/images/CacherImageDefination/versions/1.0.0" `
-  --admin-username "test-project" `
-  --admin-password "aA1123456789" `
-  --size "Standard_B1s"
+# Load environment variables from .env file
+$envFile = Get-Content ".env" | ForEach-Object {
+    if ($_ -match '^([^=]+)=(.*)$') {
+        [System.Collections.DictionaryEntry]::new($matches[1], $matches[2])
+    }
+}
+
+# Convert environment variables to a hash table
+$envVars = @{}
+foreach ($envEntry in $envFile) {
+    $envVars[$envEntry.Key] = $envEntry.Value
+}
+
+# Authenticate with Azure using environment variables
+az login --service-principal --username $envVars["username"] --password $envVars["password"] --tenant $envVars["tenant"]
+
+# Create VM using the captured image
+$vmName = "test-project$countOfServers"
+$customImageId = "/subscriptions/9ec5dfe7-ab9e-4f9b-ade0-ffb59f14777a/resourceGroups/test-project_group/providers/Microsoft.Compute/galleries/CacherNew/images/CacherImageDefination/versions/1.0.0"
+$adminUsername = $envVars["adminUsername"]
+$adminPassword = $envVars["adminPassword"]
+$vmSize = "Standard_B1s"
+
+az vm create `
+  --resource-group "test-project_group" `
+  --name $vmName `
+  --image $customImageId `
+  --admin-username $adminUsername `
+  --admin-password $adminPassword `
+  --size $vmSize
+
 # Replace 'test-project0NSG' with the name of your NSG
-az network nsg rule create --resource-group "test-project_group" --nsg-name "test-project0NSG" --name "AllowAnyCustom8000Inbound" --protocol Tcp --direction Inbound --priority 100 --destination-port-ranges 8000 --access Allow --source-address-prefix "*" --destination-address-prefix "*"
+az network nsg rule create `
+  --resource-group "test-project_group" `
+  --nsg-name "test-project0NSG" `
+  --name "AllowAnyCustom8000Inbound" `
+  --protocol Tcp `
+  --direction Inbound `
+  --priority 100 `
+  --destination-port-ranges 8000 `
+  --access Allow `
+  --source-address-prefix "*" `
+  --destination-address-prefix "*"

@@ -14,9 +14,9 @@ const userSchema = new mongoose.Schema({
   memoryUsed: {
     type: Number,
     required: true,
-    default:0
+    default: 0
   },
-  
+
   password: {
     type: String,
     required: true,

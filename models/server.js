@@ -22,13 +22,13 @@ const ServerSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  publicIpAddress:{
+  publicIpAddress: {
     type: String,
     required: true,
   }
 });
 
 // Create the AzureVM model based on the schema
-const Server = mongoose.model('Server',ServerSchema );
+const Server = mongoose.model('Server', ServerSchema);
 
 module.exports = Server;

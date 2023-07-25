@@ -1,0 +1,12 @@
+#cloud-config
+package_upgrade: true
+packages:
+  - redis-server
+write_files:
+  - path: /home/test-project/redis.conf
+    content: |
+      bind 0.0.0.0
+      requirepass abcd
+      port 8000
+runcmd:
+  - redis-server /home/test-project/redis.conf
