@@ -3,7 +3,7 @@ param(
 )
 
 # Load environment variables from .env file
-$envFile = Get-Content ".env" | ForEach-Object {
+$envFile = Get-Content "C:\Git\cacher\.env" | ForEach-Object {
     if ($_ -match '^([^=]+)=(.*)$') {
         [System.Collections.DictionaryEntry]::new($matches[1], $matches[2])
     }
@@ -31,12 +31,13 @@ az vm create `
   --image $customImageId `
   --admin-username $adminUsername `
   --admin-password $adminPassword `
-  --size $vmSize
+  --size $vmSize `
+  --public-ip-sku "Standard"
 
-# Replace 'test-project0NSG' with the name of your NSG
+# Create NSG rule to allow inbound traffic on port 8000
 az network nsg rule create `
   --resource-group "test-project_group" `
-  --nsg-name "test-project0NSG" `
+  --nsg-name "test-project$countOfServers`NSG" `
   --name "AllowAnyCustom8000Inbound" `
   --protocol Tcp `
   --direction Inbound `
