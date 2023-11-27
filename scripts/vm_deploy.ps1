@@ -1,9 +1,8 @@
 param(
     [string]$countOfServers
 )
-
-# Load environment variables from .env file
-$envFile = Get-Content "C:\Git\cacher\.env" | ForEach-Object {
+$envPath = Join-Path (Get-Location).Path ".env"
+$envFile = Get-Content $envPath | ForEach-Object {
     if ($_ -match '^([^=]+)=(.*)$') {
         [System.Collections.DictionaryEntry]::new($matches[1], $matches[2])
     }
