@@ -6,8 +6,9 @@ function Set-Capacity {
    )
 
    # Retrieve email from local storage (replace with your actual code)
-   $email = Get-Item -Path HKCU:\Software\Cacher -Name Email
-
+   $email = Get-ItemProperty -Path HKCU:\Software\Cacher -Name Email
+   $email = $email.Email
+   $email
    # Check if email is present in local storage
    if ($email) {
       # API endpoint
@@ -32,3 +33,6 @@ function Set-Capacity {
       Write-Host "Email not found in local storage."
    }
 }
+
+
+#Set-Capacity -capacity 20

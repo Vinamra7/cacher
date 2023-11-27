@@ -31,7 +31,7 @@ function Save-UserToRegistry {
     )
 
     $registryPath = "HKCU:\Software\Cacher"
-    $registryName = "LoggedInUser"
+    $registryName = "Email"
 
     # Create the registry key if it doesn't exist
     if (-not (Test-Path $registryPath)) {
@@ -39,10 +39,7 @@ function Save-UserToRegistry {
     }
 
     # Create or update the registry entry
-    Set-ItemProperty -Path $registryPath -Name $registryName -Value @{
-        Username = $username
-        Token = $token
-    }
+    Set-ItemProperty -Path $registryPath -Name $registryName -Value $token
 }
 
 function Login-User {
@@ -64,9 +61,8 @@ function Login-User {
     try {
         $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $body -ErrorAction Stop
         # Save user information to the Registry
-        Save-UserToRegistry -username $username -token $response.Token.user
-
-        Write-Host "Login successful. Welcome, $username! Token: $($response.Token.user)"
+        Save-UserToRegistry -username $username -token $response.user
+        Write-Host "Login successful. Welcome, $username! Token: $($response.user)"
     } catch {
         Write-Host "Login failed. Error: $($_.Exception.Message)"
     }

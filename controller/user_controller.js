@@ -59,7 +59,7 @@ const loginController = async (req, res) => {
 
     // If the user and password are valid, you can consider the user as authenticated
     // You may choose to handle the authentication response as needed
-    res.status(200).json({ message: "Login successful!",user:user });
+    res.status(200).json({ message: "Login successful!",user:user.email });
   } catch (error) {
     console.error("Error during login:", error);
     res
