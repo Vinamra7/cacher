@@ -1,5 +1,6 @@
 param(
-    [string]$countOfServers
+    [string]$countOfServers,
+    [string]$uniqueId
 )
 $envPath = Join-Path (Get-Location).Path ".env"
 $envFile = Get-Content $envPath | ForEach-Object {
@@ -18,7 +19,7 @@ foreach ($envEntry in $envFile) {
 az login --service-principal --username $envVars["username"] --password $envVars["password"] --tenant $envVars["tenant"]
 
 # Create VM using the captured image
-$vmName = "test-project$countOfServers"
+$vmName = "$uniqueId$countOfServers"
 $customImageId = "/subscriptions/9ec5dfe7-ab9e-4f9b-ade0-ffb59f14777a/resourceGroups/test-project_group/providers/Microsoft.Compute/galleries/CacherNew/images/CacherImageDefination/versions/1.0.0"
 $adminUsername = $envVars["adminUsername"]
 $adminPassword = $envVars["adminPassword"]

@@ -20,8 +20,7 @@ const signUpController = async (req, res) => {
     const newUser = new User({
       // You can generate a unique ID here or use a library like "uuid" for this purpose
       email,
-      memoryAllocated: 0, // Initialize memoryAllocated to 0
-      vmsAllotted: [], // Initialize an empty array for vmsAllotted
+      memoryAllocated: 0, // Initialize memoryAllocated to 0 // Initialize an empty array for vmsAllotted
       password: hashedPassword, // Save the hashed password
     });
 
@@ -93,10 +92,7 @@ const increaseAllocationController = async (req, res) => {
   }
 };
 
-const getPost = ()=>{
-  const {id} = req.body;
-  
-}
+
 module.exports = {
   signUpController,
   loginController,

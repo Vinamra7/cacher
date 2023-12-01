@@ -4,6 +4,7 @@ const redis = require("redis");
 const { redisConnectionDetails } = require("../helpers/request_distribution.js")
 
 const increaseCachingCapacityController = async (req, res) => {
+  const {uniqueId} = req.body;
   const scriptPath = `scripts\\vm_deploy.ps1`;
   var countOfServers = 0;
   try {
@@ -15,7 +16,7 @@ const increaseCachingCapacityController = async (req, res) => {
   }
 
   // Run PowerShell with the script as an argument
-  const child = spawn('powershell.exe', [scriptPath, countOfServers], {
+  const child = spawn('powershell.exe', [scriptPath, countOfServers,uniqueId], {
     stdio: 'pipe' // Set 'pipe' for stdout to capture the output
   });
 
@@ -25,12 +26,13 @@ const increaseCachingCapacityController = async (req, res) => {
     try {
       if (data.location) {
         const newServer = new Server({
-          vmName: "test-project" + countOfServers,
+          vmName: uniqueId + countOfServers,
           location: data.location,
           resourceGroup: data.resourceGroup,
           memoryGB: 1,
           isRunning: data.powerState,
           publicIpAddress: data.publicIpAddress,
+          user:uniqueId,
         })
         await newServer.save();
       }
@@ -83,9 +85,10 @@ const getRedisMemoryInfo = (redisOptions, callback) => {
 
 
 const getUsedMemoryController = async (req, res) => {
-  const {userId } = req.body;
+  const {uniqueId } = req.body;
   try {
-    const servers = await Server.find({ server_name: { $regex: `^${userId}_` } });
+    const servers = await Server.find({ user: uniqueId});
+    console.log(servers);
     var usedMemory = 0;
     var totalMemory = 0;
     for (let i = 0; i < servers.length; i++) {

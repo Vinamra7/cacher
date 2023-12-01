@@ -25,6 +25,10 @@ const ServerSchema = new mongoose.Schema({
   publicIpAddress: {
     type: String,
     required: true,
+  },
+  user: {
+    type: String,
+    required: true,
   }
 });
 

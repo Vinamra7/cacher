@@ -11,4 +11,5 @@ router.post('/used-capacity',getUsedMemoryController);
 router.post('/user/signup', signUpController);
 router.post('/user/signin', loginController);
 router.post("/user/increase-allocation", increaseAllocationController);
+router.post('/user/get-used-memory',getUsedMemoryController);
 module.exports = router;
