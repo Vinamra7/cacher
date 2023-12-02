@@ -1,53 +1,73 @@
-const { spawn } = require('child_process');
-const Server = require("../models/server.js")
+const { spawn } = require("child_process");
+const Server = require("../models/server.js");
 const redis = require("redis");
-const { redisConnectionDetails } = require("../helpers/request_distribution.js")
+const {
+  redisConnectionDetails,
+} = require("../helpers/request_distribution.js");
+const User = require("../models/user.js");
 
-const increaseCachingCapacityController = async (req, res) => {
-  const {uniqueId} = req.body;
+const increaseCachingCapacityController = async (req,res) => {
+  const { uniqueId } = req.body;
   const scriptPath = `scripts\\vm_deploy.ps1`;
   var countOfServers = 0;
+  var user = {};
   try {
     const count = await Server.countDocuments({});
     countOfServers = count;
+    const userObject = await User.findOne({ email: uniqueId });
+    if (!userObject) {
+      return res.status(404).send({ error: "User not found." });
+    }
+    user = userObject;
+    
   } catch (err) {
-    console.error('Error getting count:', err);
+    console.error("Error getting count:", err);
     res.status.send({ error: "Internal Server Error" });
   }
-
   // Run PowerShell with the script as an argument
-  const child = spawn('powershell.exe', [scriptPath, countOfServers,uniqueId], {
-    stdio: 'pipe' // Set 'pipe' for stdout to capture the output
-  });
+  const child = spawn(
+    "powershell.exe",
+    [scriptPath, countOfServers, user._id],
+    {
+      stdio: "pipe", // Set 'pipe' for stdout to capture the output
+    }
+  );
 
   // Capture and display the output of the script
-  child.stdout.on('data', async (data) => {
+  child.stdout.on("data", async (data) => {
     data = JSON.parse(data);
     try {
+      
       if (data.location) {
+        
         const newServer = new Server({
-          vmName: uniqueId + countOfServers,
+          vmName: user._id + countOfServers,
           location: data.location,
           resourceGroup: data.resourceGroup,
           memoryGB: 1,
           isRunning: data.powerState,
           publicIpAddress: data.publicIpAddress,
-          user:uniqueId,
-        })
+          user: user._id,
+        });
         await newServer.save();
+        
+  
+        user.memoryAllocated += 1;
+        await user.save();
       }
+     
     } catch (err) {
-      res.status(500).send({ error: "Internal Server Error" })
+      res.status(500).send({ error: "Internal Server Error" });
     }
   });
 
   // Handle any errors that occur during script execution
-  child.on('error', (err) => {
+  child.on("error", (err) => {
     res.status(500).send({ error: "Internal Server Error" });
   });
 
   // Handle the script's exit event
-  child.on('exit', async (code) => {
+  child.on("exit", async (code) => {
     res.send({ data: "Updated Capacity Successfully" });
   });
 };
@@ -56,13 +76,13 @@ const getRedisMemoryInfo = (redisOptions, callback) => {
   const redisClient = redis.createClient(redisOptions);
 
   // Get the Redis server memory info using the INFO command
-  redisClient.info('memory', (error, info) => {
+  redisClient.info("memory", (error, info) => {
     if (error) {
       callback(error);
     } else {
       // Parse the memory information into an object
-      const memoryInfo = info.split('\r\n').reduce((result, line) => {
-        const [key, value] = line.split(':');
+      const memoryInfo = info.split("\r\n").reduce((result, line) => {
+        const [key, value] = line.split(":");
         if (key && value) {
           result[key] = value;
         }
@@ -80,21 +100,19 @@ const getRedisMemoryInfo = (redisOptions, callback) => {
       callback(null, { maxMemory, totalMemory });
     }
   });
-}
-
-
+};
 
 const getUsedMemoryController = async (req, res) => {
-  const {uniqueId } = req.body;
+  const { uniqueId } = req.body;
   try {
-    const servers = await Server.find({ user: uniqueId});
+    const servers = await Server.find({ user: uniqueId });
     console.log(servers);
     var usedMemory = 0;
     var totalMemory = 0;
     for (let i = 0; i < servers.length; i++) {
       getRedisMemoryInfo(servers[i].publicIpAddress, (error, memoryInfo) => {
         if (error) {
-          console.error('Error:', error);
+          console.error("Error:", error);
           res.status(500).send({ error: "Something went wrong..." });
         } else {
           usedMemory += memoryInfo.totalMemory;
@@ -102,13 +120,12 @@ const getUsedMemoryController = async (req, res) => {
         }
       });
     }
-  }catch(err){
-    console.error('Error:', error);
+  } catch (err) {
+    console.error("Error:", error);
     res.status(500).send({ error: "Something went wrong..." });
   }
-  var percentageUsed = (usedMemory/totalMemory)*100;
-  res.send({userId:userId,memoryUsed:percentageUsed});
-}
+  var percentageUsed = (usedMemory / totalMemory) * 100;
+  res.send({ userId: userId, memoryUsed: percentageUsed });
+};
 
-
-module.exports = { increaseCachingCapacityController,getUsedMemoryController};
+module.exports = { increaseCachingCapacityController, getUsedMemoryController };
