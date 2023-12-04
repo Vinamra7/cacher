@@ -37,7 +37,7 @@ az vm create `
 # Create NSG rule to allow inbound traffic on port 8000
 az network nsg rule create `
   --resource-group "test-project_group" `
-  --nsg-name "test-project$countOfServers`NSG" `
+  --nsg-name "$uniqueId$countOfServers`NSG" `
   --name "AllowAnyCustom8000Inbound" `
   --protocol Tcp `
   --direction Inbound `

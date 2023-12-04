@@ -27,3 +27,11 @@ function Get-Capacity {
        Write-Host "Email not found in local storage."
     }
  }
+
+ #Import-Module .\cCLI
+#Register-User –username "abc@example.com"  -password "your password"
+#Login-User -username "abc@example.com" -password "your password"
+#Increase-Capacity
+#Add-CacheKey -key "hello" -value "desire values" 
+#Get-CacheKey -key "hello"
+

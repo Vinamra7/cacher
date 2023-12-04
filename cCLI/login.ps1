@@ -18,7 +18,7 @@ function Register-User {
 
     try {
         $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $body -ErrorAction Stop
-        Write-Host "User registered successfully. UserID: $($response.UserId)"
+        Write-Host "User registered successfully. "
     } catch {
         Write-Host "Failed to register user. Error: $($_.Exception.Message)"
     }

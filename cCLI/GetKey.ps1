@@ -17,7 +17,7 @@ function Get-CacheKey {
 
       # Prepare data for API request
       $requestData = @{
-         email    = $emailValue
+         uniqueId    = $emailValue
          cacheKey = $key
       }
 

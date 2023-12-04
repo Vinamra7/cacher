@@ -3,10 +3,13 @@ const Redis = require('ioredis');
 const addKeyController = async (req, res) => {
     const { uniqueId, cacheKey, value } = req.body;
     const uniqueKey = uniqueId + cacheKey;
+    console.log(uniqueKey);
     let serverIpAddress = await getHashNode(uniqueKey);
+    console.log(serverIpAddress);
     const connectionDetails = redisConnectionDetails(serverIpAddress);
     const redis = await new Redis(connectionDetails);
     await redis.set(uniqueKey, value);
+   
     res.send({ "message": "done", "server": serverIpAddress });
 }
 

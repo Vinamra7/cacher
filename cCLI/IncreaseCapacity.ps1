@@ -1,14 +1,10 @@
 # Function to increase user capacity
-function Set-Capacity {
-   param(
-      [Parameter(Mandatory = $true)]
-      [int]$capacity
-   )
+function Increase-Capacity {
+
 
    # Retrieve email from local storage (replace with your actual code)
    $email = Get-ItemProperty -Path HKCU:\Software\Cacher -Name Email
    $email = $email.Email
-   $email
    # Check if email is present in local storage
    if ($email) {
       # API endpoint
@@ -16,8 +12,7 @@ function Set-Capacity {
 
       # Prepare data for API request
       $requestData = @{
-         email    = $email
-         capacity = $capacity
+         uniqueId    = $email
       }
 
       # Convert data to JSON
